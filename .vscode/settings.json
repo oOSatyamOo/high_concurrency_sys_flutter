@@ -1,0 +1,11 @@
+{
+    "dart.flutterSdkPath": "/Users/oooo/fvm/versions/stable",
+    "flavors": {
+        "dev": {
+            "program": "lib/main_dev.dart"
+        },
+        "prod": {
+            "program": "lib/main_prod.dart"
+        }
+    }
+}

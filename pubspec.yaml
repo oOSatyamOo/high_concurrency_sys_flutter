@@ -1,0 +1,46 @@
+name: aether_cost_opt
+description: "Aether — The Nervous System of a global MMORPG. High-concurrency real-time Flutter + Firebase."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # @AETHER: Firebase core + Firestore for real-time data backbone.
+  firebase_core: ^3.12.1
+  cloud_firestore: ^5.6.7
+
+  # @AETHER: Cubit (flutter_bloc) chosen over Bloc/Riverpod for 100ms timer perf.
+  # Cubit.emit() is synchronous — zero event-queue overhead per tick.
+  # At 10 ticks/sec, this avoids ~600 event object allocations/min vs full Bloc.
+  flutter_bloc: ^9.1.0
+
+  # @AETHER: GetIt for compile-time-safe service location. Lightweight, no codegen needed.
+  get_it: ^8.0.3
+
+  # @AETHER: Equatable for value-equality in Cubit states — prevents redundant rebuilds.
+  equatable: ^2.0.7
+
+  # @AETHER: UUID v4 for collision-resistant user/message ID generation.
+  uuid: ^4.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # @AETHER: fake_cloud_firestore provides an in-memory Firestore that supports
+  # runTransaction — critical for testing RaidService concurrency guarantees.
+  fake_cloud_firestore: ^3.1.0
+
+  # @AETHER: bloc_test ^10.x aligns with flutter_bloc ^9.x (both use bloc ^9.x).
+  # The ^9.x bloc_test depended on bloc ^8.x — causing version conflict.
+  bloc_test: ^10.0.0
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/aether_cost_opt.iml" filepath="$PROJECT_DIR$/aether_cost_opt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/aether_cost_opt_android.iml" filepath="$PROJECT_DIR$/android/aether_cost_opt_android.iml" />
+    </modules>
+  </component>
+</project>
