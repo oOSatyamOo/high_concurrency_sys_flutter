@@ -33,7 +33,7 @@ abstract final class AetherConstants {
 
   // ── Firestore Collections ────────────────────────
   /// Collection name for raid documents.
-  static const String raidsCollection = 'raids';
+  static const String raidsCollection = 'events';
 
   /// Collection name for chat messages.
   static const String chatCollection = 'global_chat';
@@ -42,7 +42,7 @@ abstract final class AetherConstants {
   static const String worldBossCollection = 'world_boss';
 
   /// Document ID for the currently active raid.
-  static const String activeRaidDocument = 'current_raid';
+  static const String activeRaidDocument = 'dragon_raid';
 
   /// Document ID for the active world boss event.
   static const String activeWorldBossDocument = 'active_event';

@@ -8,7 +8,6 @@ import 'color_palette.dart';
 // This prevents Material's auto-tonal mapping from diluting our neon palette.
 
 // @AETHER:CONTINUATION — Phase 2 will add custom TextButton, OutlinedButton,
-// and BottomSheet themes here. Search for TODO markers below.
 
 /// {@template app_theme}
 /// Industry-grade Material 3 dark theme for Aether.
@@ -54,10 +53,7 @@ abstract final class AppTheme {
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(
-            color: ColorPalette.border,
-            width: 0.5,
-          ),
+          side: const BorderSide(color: ColorPalette.border, width: 0.5),
         ),
       ),
 
@@ -125,10 +121,7 @@ abstract final class AppTheme {
       ),
 
       // ── Icon ─────────────────────────────────────────
-      iconTheme: const IconThemeData(
-        color: ColorPalette.neonCyan,
-        size: 24,
-      ),
+      iconTheme: const IconThemeData(color: ColorPalette.neonCyan, size: 24),
 
       // ── Text ─────────────────────────────────────────
       textTheme: _textTheme,
@@ -144,9 +137,7 @@ abstract final class AppTheme {
         backgroundColor: ColorPalette.abyssElevated,
         contentTextStyle: const TextStyle(color: ColorPalette.textPrimary),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }

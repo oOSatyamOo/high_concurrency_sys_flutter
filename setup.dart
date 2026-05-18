@@ -1,0 +1,195 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart' show debugPrint;
+
+void main() async {
+  debugPrint('===================================================');
+  debugPrint('🛠️  Aether Environment Setup');
+  debugPrint('===================================================');
+
+  // 1. Validate Root Directory
+  final pubspec = File('pubspec.yaml');
+  if (!pubspec.existsSync()) {
+    debugPrint('❌ ERROR: pubspec.yaml not found.');
+    debugPrint(
+      '💡 HEALING ACTION: You must run this script from the root of your Flutter project.',
+    );
+    exit(1);
+  }
+
+  // 2. Inject Required Dependencies
+  debugPrint('📦 Checking testing & linting dependencies...');
+  final pubspecContent = pubspec.readAsStringSync();
+  final missingDeps = <String>[];
+
+  if (!pubspecContent.contains('fake_cloud_firestore:'))
+    missingDeps.add('fake_cloud_firestore');
+  if (!pubspecContent.contains('flutter_lints:'))
+    missingDeps.add('flutter_lints');
+
+  if (missingDeps.isNotEmpty) {
+    debugPrint(
+      '⚙️  Injecting missing dev_dependencies: ${missingDeps.join(', ')}...',
+    );
+    final result = await Process.run('flutter', [
+      'pub',
+      'add',
+      '--dev',
+      ...missingDeps,
+    ]);
+    if (result.exitCode != 0) {
+      debugPrint(
+        '❌ ERROR: Failed to add dependencies. Please add them manually.',
+      );
+      debugPrint(result.stderr.toString());
+    } else {
+      debugPrint('✅ Dependencies injected successfully.');
+    }
+  } else {
+    debugPrint('✅ All necessary dev_dependencies are present.');
+  }
+
+  // 3. Ensure Git is present and healthy
+  final hookDir = Directory('.git/hooks');
+  if (!hookDir.existsSync()) {
+    debugPrint('⚠️  No .git directory found. Initializing git...');
+    final gitInit = await Process.run('git', ['init']);
+    if (gitInit.exitCode != 0) {
+      debugPrint(
+        '❌ ERROR: Git is not installed or accessible. The telemetry hook cannot be installed.',
+      );
+      debugPrint(
+        '💡 HEALING ACTION: Install Git, run "git init", and re-run this script.',
+      );
+      exit(1);
+    }
+    hookDir.createSync(recursive: true);
+  }
+
+  // 4. Generate the robust compiler script
+  _generateCompilerScript();
+
+  // 5. Safely Append to pre-commit hook (do not overwrite existing hooks)
+  final isWindows = Platform.isWindows;
+  final hookFile = File('.git/hooks/pre-commit');
+  const hookCommand = 'dart aether_compiler.dart\ngit add AETHER_TELEMETRY.md';
+
+  if (hookFile.existsSync()) {
+    final currentHook = hookFile.readAsStringSync();
+    if (!currentHook.contains('aether_compiler.dart')) {
+      debugPrint(
+        '🔗 Appending Aether telemetry to existing pre-commit hook...',
+      );
+      hookFile.writeAsStringSync(
+        '\n# Aether Telemetry\n$hookCommand\n',
+        mode: FileMode.append,
+      );
+    }
+  } else {
+    debugPrint('🔗 Creating new pre-commit hook...');
+    hookFile.writeAsStringSync('#!/bin/sh\n# Aether Telemetry\n$hookCommand\n');
+  }
+
+  if (!isWindows) {
+    await Process.run('chmod', ['+x', '.git/hooks/pre-commit']);
+  }
+
+  debugPrint('\n✅ SETUP COMPLETE. The Aether "Flight Recorder" is active.');
+  debugPrint(
+    '-> You can now write code normally. Your architectural decisions will be safely logged on commit.',
+  );
+  debugPrint('===================================================');
+}
+
+void _generateCompilerScript() {
+  const compilerCode = '''
+import 'dart:io';
+
+void main() {
+  final dir = Directory('lib');
+  if (!dir.existsSync()) return; // Fail silently so we don't break the user's git commit
+
+  int setStateCount = 0;
+  int valueNotifierCount = 0;
+  int repaintBoundaryCount = 0;
+  int transactionCount = 0;
+  int incrementCount = 0;
+  List<String> thoughts = [];
+
+  for (var entity in dir.listSync(recursive: true)) {
+    if (entity is File && entity.path.endsWith('.dart')) {
+      try {
+        final lines = entity.readAsLinesSync();
+        for (int i = 0; i < lines.length; i++) {
+          final line = lines[i].trim();
+          
+          if (line.contains('setState(')) setStateCount++;
+          if (line.contains('ValueNotifier')) valueNotifierCount++;
+          if (line.contains('RepaintBoundary')) repaintBoundaryCount++;
+          if (line.contains('runTransaction') || line.contains('Transaction(')) transactionCount++;
+          if (line.contains('FieldValue.increment')) incrementCount++;
+          
+          if (line.contains('// @AETHER:')) {
+            thoughts.add('- **
+\${entity.uri.pathSegments.last}** (Line 
+\${i+1}): 
+\${line.substring(line.indexOf('// @AETHER:') + 11).trim()}');
+          }
+        }
+      } catch (_) {
+        // Catch read errors (e.g. encoding issues) and skip gracefully
+      }
+    }
+  }
+
+  final telemetryFile = File('AETHER_TELEMETRY.md');
+  StringBuffer output = StringBuffer('# Aether Automated Telemetry Report\n\n');
+  output.writeln('> Auto-generated by the pre-commit "Flight Recorder".\n');
+  
+  output.writeln('## 1. Architectural Fingerprint');
+  if (transactionCount > 0 || incrementCount > 0) {
+    output.writeln('✅ Atomic operations detected (`runTransaction`: 
+\$transactionCount, `increment`: 
+\$incrementCount)');
+  } else {
+    output.writeln('❌ No atomic operations detected.');
+  }
+
+  output.writeln('\n### UI Performance');
+  output.writeln('- 
+`setState`
+: 
+\$setStateCount | 
+`ValueNotifier`
+: 
+\$valueNotifierCount | 
+`RepaintBoundary`
+: \$repaintBoundaryCount');
+  
+  if (valueNotifierCount > 0 || repaintBoundaryCount > 0) {
+    output.writeln('✅ Targeted repaints detected.');
+  } else if (setStateCount > 3) {
+    output.writeln('⚠️ High 
+`setState`
+ usage without localized rebuilds.');
+  }
+
+  output.writeln('\n## 2. Developer Thought Log');
+  if (thoughts.isNotEmpty) {
+    thoughts.forEach(output.writeln);
+  } else {
+    output.writeln('*No inline 
+`// @AETHER:`
+ comments found.*');
+  }
+
+  try {
+    telemetryFile.writeAsStringSync(output.toString());
+  } catch (_) {
+    // Failsafe
+  }
+}
+''';
+
+  File('aether_compiler.dart').writeAsStringSync(compilerCode);
+}

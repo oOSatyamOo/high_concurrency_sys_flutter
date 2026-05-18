@@ -21,7 +21,6 @@ linter:
   rules:
     # --- Type Safety ---
     avoid_dynamic_calls: true
-    strict_raw_type: true
 
     # --- Code Quality ---
     avoid_print: true

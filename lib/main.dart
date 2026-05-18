@@ -1,8 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/di/injection.dart';
 import 'core/theme/app_theme.dart';
+import 'features/aether/presentation/cubit/auth_cubit.dart';
+import 'features/aether/presentation/cubit/chat_cubit.dart';
+import 'features/aether/presentation/cubit/raid_cubit.dart';
+import 'features/aether/presentation/cubit/world_boss_cubit.dart';
+import 'features/aether/presentation/pages/auth_gate.dart';
 
 // @AETHER: Entry point for the Aether application.
 // Initialization order is critical:
@@ -48,54 +54,22 @@ class AetherApp extends StatelessWidget {
       title: 'Aether',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-
-      // @AETHER:CONTINUATION — Replace this home with AetherPage in Phase 2.
-      // The AetherPage will contain three sections:
-      //   1. GlobalPulseWidget (top) — World Boss countdown
-      //   2. GeoRaidWidget (center) — Raid slots + Join button
-      //   3. EngagementChatWidget (bottom) — Real-time chat
-      home: const _AetherPlaceholder(),
-    );
-  }
-}
-
-/// Temporary placeholder widget until Phase 2 builds the full AetherPage.
-///
-/// Displays a confirmation that the core foundation is working.
-class _AetherPlaceholder extends StatelessWidget {
-  const _AetherPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(
-              Icons.flash_on_rounded,
-              size: 64,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'AETHER',
-              style: theme.textTheme.displayLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'The Nervous System',
-              style: theme.textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 32),
-            Text(
-              'Core Foundation Active',
-              style: theme.textTheme.labelLarge,
-            ),
-          ],
-        ),
+      home: MultiBlocProvider(
+        providers: <BlocProvider<dynamic>>[
+          BlocProvider<AuthCubit>(
+            create: (_) => sl<AuthCubit>(),
+          ),
+          BlocProvider<WorldBossCubit>(
+            create: (_) => sl<WorldBossCubit>(),
+          ),
+          BlocProvider<RaidCubit>(
+            create: (_) => sl<RaidCubit>(),
+          ),
+          BlocProvider<ChatCubit>(
+            create: (_) => sl<ChatCubit>(),
+          ),
+        ],
+        child: const AuthGate(),
       ),
     );
   }
