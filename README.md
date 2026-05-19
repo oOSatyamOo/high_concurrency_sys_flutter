@@ -9,6 +9,10 @@ A robust, scalable "nervous system" for a global MMORPG, built with Flutter and 
 - **Engagement Chat:** A real-time, global communication link optimized for O(1) read costs per new message, regardless of chat history length.
 - **Frictionless Authentication:** Utilizes Firebase Anonymous Authentication to instantly grant users session persistence without login walls.
 
+## The Firebase Bill (Cost & Sharding)
+
+To prevent a massive 'Read' cost bill when 10,000 players are chatting, we query the `global_chat` collection using `.orderBy('timestamp').limitToLast(50)`. By limiting the initial fetch to the 50 most recent messages, we cap the baseline load cost, while subsequent real-time `snapshots()` only charge 1 document read per new incoming message rather than re-reading the entire history. Furthermore, because the chat is a high-velocity, append-only stream, we handle UI state locally by diffing incoming snapshots to prevent redundant layout rebuilds.
+
 ## Architecture
 
 The application strictly adheres to **Clean Architecture** principles and **SOLID** design:
@@ -36,9 +40,6 @@ lib/
 └── main.dart               # Entry point
 ```
 
-## The Firebase Bill (Cost & Sharding)
-
-To prevent a massive 'Read' cost bill when 10,000 players are chatting, we query the `global_chat` collection using `.orderBy('timestamp').limitToLast(50)`. By limiting the initial fetch to the 50 most recent messages, we cap the baseline load cost, while subsequent real-time `snapshots()` only charge 1 document read per new incoming message rather than re-reading the entire history. Furthermore, because the chat is a high-velocity, append-only stream, we handle UI state locally by diffing incoming snapshots to prevent redundant layout rebuilds.
 
 ## Setup Instructions
 
