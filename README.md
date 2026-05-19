@@ -70,3 +70,31 @@ The project includes an aggressive concurrency test to verify the transaction in
 flutter test test/raid_concurrency_test.dart
 ```
 This simulates 50 simultaneous join requests and asserts that exactly 15 succeed.
+
+## Screens
+
+
+## 📱 Screenshots
+<div align="center">
+  <table border="0">
+    <tr>
+      <td width="48%" align="center" valign="top">
+          <img src= "https://github.com/user-attachments/assets/a7ab7488-9217-48a4-bb37-49a86ed1c87d" width="100%" />
+        </a>
+        <br><br>
+        <a href="https://github.com/oOSatyamOo/GitHub-Language-Stats">
+          <img src="https://github.com/user-attachments/assets/d59afb6b-e463-4e0a-bfbd-82c389b72d94"  width="100%" />
+        </a>
+      </td>
+       <td width="48%" align="center" valign="top">
+          <img src="https://github.com/user-attachments/assets/4933ec90-96ec-420a-a27d-a05df336e3e6" width="100%" />
+        </a>
+        <br><br>
+        <a href="https://github.com/oOSatyamOo/GitHub-Language-Stats">
+          <img src="https://github.com/user-attachments/assets/34301b20-597d-44a8-9148-d50776b7928d" width="100%" />
+        </a>
+      </td>
+    </tr>
+  </table>
+</div>
+
