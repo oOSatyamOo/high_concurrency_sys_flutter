@@ -1,16 +1,17 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 
-import 'package:flutter/foundation.dart' show debugPrint;
 
 void main() async {
-  debugPrint('===================================================');
-  debugPrint('🛡️  Aether Architecture Linter (Diagnostic Mode) 🛡️');
-  debugPrint('===================================================');
+  print('===================================================');
+  print('🛡️  Aether Architecture Linter (Diagnostic Mode) 🛡️');
+  print('===================================================');
 
   final pubspec = File('pubspec.yaml');
   if (!pubspec.existsSync()) {
-    debugPrint('❌ CRITICAL ERROR: Not running in a Flutter project root.');
-    debugPrint(
+    print('❌ CRITICAL ERROR: Not running in a Flutter project root.');
+    print(
       '💡 HEALING: `cd` into your project directory before running this.',
     );
     return;
@@ -21,15 +22,15 @@ void main() async {
   out.writeln('# Aether Diagnostic Report\n');
 
   // 1. Strict Lints
-  debugPrint('⏳ Running Diagnostic: Code Quality (flutter analyze)...');
+  print('⏳ Running Diagnostic: Code Quality (flutter analyze)...');
   try {
-    final analyze = await Process.run('flutter', ['analyze']);
+    final analyze = await Process.run('fvm', ['flutter', 'analyze']);
     if (analyze.exitCode == 0) {
-      debugPrint('✅ Linter: PASS');
+      print('✅ Linter: PASS');
       out.writeln('### 1. Code Quality');
       out.writeln('✅ **PASS:** Zero static analysis warnings.');
     } else {
-      debugPrint('❌ Linter: FAIL');
+      print('❌ Linter: FAIL');
       out.writeln('### 1. Code Quality');
       out.writeln('❌ **FAIL:** Static analysis found issues.');
       out.writeln(
@@ -37,18 +38,18 @@ void main() async {
       );
     }
   } catch (e) {
-    debugPrint(
+    print(
       '❌ CRITICAL ERROR: Could not run "flutter analyze". Is Flutter in your PATH?',
     );
     return;
   }
 
   // 2. Outcome Verification (Tests)
-  debugPrint('⏳ Running Diagnostic: Concurrency Check (flutter test)...');
+  print('⏳ Running Diagnostic: Concurrency Check (flutter test)...');
   final testFile = File('test/raid_concurrency_test.dart');
 
   if (!testFile.existsSync()) {
-    debugPrint('❌ Tests: FAIL (raid_concurrency_test.dart is missing)');
+    print('❌ Tests: FAIL (raid_concurrency_test.dart is missing)');
     out.writeln('\n### 2. Concurrency Outcome');
     out.writeln('❌ **FAIL:** Missing test file.');
     out.writeln(
@@ -56,18 +57,19 @@ void main() async {
     );
   } else {
     try {
-      final testResult = await Process.run('flutter', [
+      final testResult = await Process.run('fvm', [
+        'flutter',
         'test',
         'test/raid_concurrency_test.dart',
       ]);
       if (testResult.exitCode == 0) {
-        debugPrint('✅ Tests: PASS');
+        print('✅ Tests: PASS');
         out.writeln('\n### 2. Concurrency Outcome');
         out.writeln(
           '✅ **PASS:** Your architecture survived the Thundering Herd.',
         );
       } else {
-        debugPrint('❌ Tests: FAIL');
+        print('❌ Tests: FAIL');
         out.writeln('\n### 2. Concurrency Outcome');
         out.writeln(
           '❌ **FAIL:** The 50-request blast failed to yield exactly 15 slots.',
@@ -77,20 +79,20 @@ void main() async {
         );
       }
     } catch (e) {
-      debugPrint('❌ CRITICAL ERROR: Could not execute "flutter test".');
+      print('❌ CRITICAL ERROR: Could not execute "flutter test".');
     }
   }
 
   try {
     reportFile.writeAsStringSync(out.toString());
-    debugPrint('\n===================================================');
-    debugPrint('📄 Report saved to ARCHITECTURE_REPORT.md');
-    debugPrint(
+    print('\n===================================================');
+    print('📄 Report saved to ARCHITECTURE_REPORT.md');
+    print(
       '👀 Read the report for HEALING ACTIONS to fix your architecture.',
     );
-    debugPrint('===================================================');
+    print('===================================================');
   } catch (e) {
-    debugPrint(
+    print(
       '❌ Could not write to ARCHITECTURE_REPORT.md. Check file permissions.',
     );
   }

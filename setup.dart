@@ -22,10 +22,12 @@ void main() async {
   final pubspecContent = pubspec.readAsStringSync();
   final missingDeps = <String>[];
 
-  if (!pubspecContent.contains('fake_cloud_firestore:'))
+  if (!pubspecContent.contains('fake_cloud_firestore:')) {
     missingDeps.add('fake_cloud_firestore');
-  if (!pubspecContent.contains('flutter_lints:'))
+  }
+  if (!pubspecContent.contains('flutter_lints:')) {
     missingDeps.add('flutter_lints');
+  }
 
   if (missingDeps.isNotEmpty) {
     debugPrint(
